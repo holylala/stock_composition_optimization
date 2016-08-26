@@ -216,7 +216,9 @@ void Package::run(double assets,double *w_original,double *out_weights){
                 //mm_weight[i]=it->second->weight->at(i);
                 out_weights[i]=it->second->weight->at(i);
         }
-        std::cout<<it->first<<":"<<it->second->result<<" "<<it->second->minf<<std::endl;  
-    }  
+        std::cout<<it->first<<":"<<it->second->result<<" "<<it->second->minf<<std::endl; 
+        delete it->second;   //release memory
+    }
+    delete condition;  //release memory
 
 }
