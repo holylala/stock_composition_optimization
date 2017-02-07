@@ -18,7 +18,7 @@ class Package{
         void setUb(double *ub);
         void setRevenue(double *weight);
         void setRisk(double *wight);
-        void run(double assets,double *original_weights,double *out_weights);
+        void run(double assets,double *original_weights,double *out_weights,bool verbose);
 
 
 };

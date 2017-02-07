@@ -7,25 +7,7 @@
 #include <math.h>
 #include <iostream>
 using namespace std;
-// double sum_constrained(const std::vector<double> &x, std::vector<double> &grad, void *my_func_data){
 
-//     Condition * condition=(Condition *)my_func_data;
-//     std::vector<double> w_walk_u=*(condition->w_walk_u);
-//     std::vector<double> w_walk_d=*(condition->w_walk_d);
-//     std::vector<double> w_original=*(condition->w_original);
-//     std::vector<double> price=*(condition->price);
-//     double fee_uplimit=condition->get_fee_uplimit();
-
-//     double sum=0.0;
-//     double fee_apc=approach_fee(x,w_original,w_walk_u,w_walk_d,price,fee_uplimit);
-//     for(int i=0;i<x.size();i++){
-//         if (!grad.empty())
-//             grad[i]=1.0;
-//         sum+=x[i];
-//     }
-//     return (sum+2*fee_apc-1.0);
-
-// }
 double sum_constrained_continous(const std::vector<double> &x,std::vector<double> &grad,void *my_func_data){
 
     Condition * condition=(Condition *)my_func_data;
@@ -106,22 +88,3 @@ double fee_sum_constrained(const std::vector<double> &x,std::vector<double> &gra
     // cout<<"sum and fee -1.0 is:"<<sum+fee_c-1.0<<endl;
     return sum+fee_c-1.0;
 }
-// double n_sum_constrained(const std::vector<double> &x, std::vector<double> &grad, void *my_func_data){
-
-//     Condition * condition=(Condition *)my_func_data;
-//     std::vector<double> w_walk_u=*(condition->w_walk_u);
-//     std::vector<double> w_walk_d=*(condition->w_walk_d);
-//     std::vector<double> w_original=*(condition->w_original);
-//     std::vector<double> price=*(condition->price);
-//     double fee_uplimit=condition->get_fee_uplimit();
-
-//     double sum=0.0;
-//     double fee_apc=approach_fee(x,w_original,w_walk_u,w_walk_d,price,fee_uplimit);
-//     for(int i=0;i<x.size();i++){
-//         if (!grad.empty())
-//             grad[i]=-1.0;
-//         sum+=x[i];
-//     }
-//     return (sum+2*fee_apc-1.0)*(-1);
-
-// }

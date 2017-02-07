@@ -1,4 +1,4 @@
-#include "Condition.h"
+#include "condition.h"
 #include <limits>
 extern double fee_ratio_uplimit;
 double Condition::get_fee_uplimit(){

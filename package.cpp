@@ -6,8 +6,7 @@
 #include <exception>
 #include <iostream>
 #include <map>
-#include "Condition.h"
-#include "cost_compute.h"
+#include "condition.h"
 #include "fee_compute.h"
 #include "sum_compute.h"
 #include "risk_compute.h"
@@ -88,17 +87,18 @@ void Package::setRisk(double *weight){
             risk_weight->at(i*np+j)=weight[i*np+j];
     }
 }
-void Package::run(double assets,double *w_original,double *out_weights){
+void Package::run(double assets,double *w_original,double *out_weights,bool verbose){
     std::vector<double> w_walk_u(np);
     std::vector<double> w_walk_d(np); 
     std::vector<double> w_original_vec(np);
     double fee_uplimit=assets*fee_ratio_uplimit;
-    cout<<"up and down:"<<endl;
+    //cout<<"up and down:"<<endl;
     for(int i=0;i<np;i++){
         w_walk_u[i]=w_original[i]+1.5*price->at(i)/fee_uplimit;
         w_walk_d[i]=w_original[i]-1.5*price->at(i)/fee_uplimit;  
         w_original_vec[i]=w_original[i];
-        cout<<w_walk_u[i]<<" "<<w_walk_d[i]<<endl;
+        if(verbose)
+            cout<<w_walk_u[i]<<" "<<w_walk_d[i]<<endl;
     }
 
 
@@ -123,14 +123,17 @@ void Package::run(double assets,double *w_original,double *out_weights){
         for(int j=0;j<np;j++){
             condition->mask->at(j)= (i & (1<<j)) ? 1:(fake_np++,0);
             //condition->mask->at(j)=0;
-            printf("%d ",condition->mask->at(j));
+            if(verbose)
+                printf("%d ",condition->mask->at(j));
         }
-        printf("fake_np is %d;i is %d\n",fake_np,i);
+        if(verbose)
+            printf("fake_np is %d;i is %d\n",fake_np,i);
         if(fake_np==0){
             //所有的数据都保持不动
             std::vector<double> grad(fake_np);
             double minf=revenue_cost(std::vector<double>(0),grad,condition);
-            printf("%lf\n",minf);
+            if(verbose)
+                printf("%lf\n",minf);
             std::vector<double> *weight_result=new std::vector<double>(np);
             for(int j=0;j<np;j++)
                 weight_result->at(j)=w_original[j];
@@ -189,11 +192,14 @@ void Package::run(double assets,double *w_original,double *out_weights){
             }
             std::cout<<std::endl;
             std::vector<double> sx(0);
-            std::cout<<risk_constrained(*w_walk,sx,condition)<<std::endl;
-            std::cout<<fee_sum_constrained(*w_walk,sx,condition)<<std::endl;
+            if(verbose){
+                std::cout<<risk_constrained(*w_walk,sx,condition)<<std::endl;
+                std::cout<<fee_sum_constrained(*w_walk,sx,condition)<<std::endl;
+            }
             result_map.insert(std::pair<int,optimization_result*>(i,new optimization_result(result,minf,weight_result)));
         }catch(std::exception &e){
-            std::cout<<e.what()<<std::endl;
+            if(verbose)
+                std::cout<<e.what()<<std::endl;
             result_map.insert(std::pair<int,optimization_result*>(i,new optimization_result(nlopt::FAILURE,minf,weight_result)));
         }
         //--------------------------------------------------------------------
@@ -207,7 +213,7 @@ void Package::run(double assets,double *w_original,double *out_weights){
     it=result_map.begin();  
     double mmm=100.0;
     //std::vector<double> mm_weight(np);
-    std::cout<<"================================="<<std::endl;
+    //std::cout<<"================================="<<std::endl;
     for (it;it!=result_map.end();it++)  
     {  
         if(it->second->minf<mmm && (it->second->result >0 && it->second->result <6)){
@@ -216,7 +222,8 @@ void Package::run(double assets,double *w_original,double *out_weights){
                 //mm_weight[i]=it->second->weight->at(i);
                 out_weights[i]=it->second->weight->at(i);
         }
-        std::cout<<it->first<<":"<<it->second->result<<" "<<it->second->minf<<std::endl; 
+        if(verbose)
+            std::cout<<it->first<<":"<<it->second->result<<" "<<it->second->minf<<std::endl; 
         delete it->second;   //release memory
     }
     delete condition;  //release memory

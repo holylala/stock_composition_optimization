@@ -2,6 +2,9 @@
 #define _condition_h_
 #include <vector>
 
+/**
+进行调仓算法过程中需要传递的变量
+**/
 class Condition
 {
     private:
